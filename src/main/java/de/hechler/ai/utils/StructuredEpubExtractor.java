@@ -18,7 +18,10 @@ import org.jsoup.parser.Parser;
 
 public class StructuredEpubExtractor {
 	
-    public static void extract(Path epubPath, Path extractPath) {
+    public void extract(Path epubPath, Path extractPath) {
+    	if (epubPath.equals(extractPath)) {
+    		throw new IllegalArgumentException("Extract path must be different from EPUB path.");
+    	}
         try (ZipFile zipFile = new ZipFile(epubPath.toFile());
         	OutputStream extractOutputStream = new FileOutputStream(extractPath.toFile())) {
         	PrintStream printStream = new PrintStream(extractOutputStream, true, StandardCharsets.UTF_8.name());
