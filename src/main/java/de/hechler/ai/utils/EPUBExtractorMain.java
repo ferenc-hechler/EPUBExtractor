@@ -7,9 +7,10 @@ import java.nio.file.Paths;
 
 public class EPUBExtractorMain {
 
-//	private final static String DEFAULT_EPUB_PATH = "input/EPUBs";
-	private final static String DEFAULT_EPUB_PATH = "C:/EBOOKS";
+	private final static String DEFAULT_EPUB_PATH = "input/EPUBs";
 	private final static String DEFAULT_EXTRACT_PATH = "output/EPUBs";
+//	private final static String DEFAULT_EPUB_PATH = "C:/EBOOKS";
+//	private final static String DEFAULT_EXTRACT_PATH = "output/EPUBs/EBOOKS";
 
 	public static void main(String[] args) {
 		String epubPath = DEFAULT_EPUB_PATH;

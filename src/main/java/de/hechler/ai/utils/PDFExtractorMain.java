@@ -8,8 +8,9 @@ import java.nio.file.Paths;
 public class PDFExtractorMain {
 
 	private final static String DEFAULT_PDF_PATH = "input/PDFs";
-//	private final static String DEFAULT_PDF_PATH = "C:/EBOOKS";
 	private final static String DEFAULT_EXTRACT_PATH = "output/PDFs";
+//	private final static String DEFAULT_PDF_PATH = "C:/EBOOKS";
+//	private final static String DEFAULT_EXTRACT_PATH = "output/PDFs/EBOOKS";
 
 	public static void main(String[] args) {
 		String pdfPath = DEFAULT_PDF_PATH;
