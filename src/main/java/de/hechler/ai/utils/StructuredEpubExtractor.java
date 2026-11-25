@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,9 +19,13 @@ import org.jsoup.parser.Parser;
 
 public class StructuredEpubExtractor {
 	
-    public void extract(Path epubPath, Path extractPath) {
+    public void extract(Path epubPath, Path extractPath, boolean overwriteExisting) {
     	if (epubPath.equals(extractPath)) {
     		throw new IllegalArgumentException("Extract path must be different from EPUB path.");
+    	}
+    	if (Files.exists(extractPath) && !overwriteExisting) {
+    		System.out.println("  -> already extracted");
+    		return; // Skip extraction if the output file already exists and overwrite is not allowed
     	}
         try (ZipFile zipFile = new ZipFile(epubPath.toFile());
         	OutputStream extractOutputStream = new FileOutputStream(extractPath.toFile())) {

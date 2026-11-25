@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.pdfbox.Loader;
@@ -12,7 +13,14 @@ import org.apache.pdfbox.text.PDFTextStripper;
 
 public class PdfTextExtractor {
 
-    public void extract(Path pdfPath, Path extractPath) {
+    public void extract(Path pdfPath, Path extractPath, boolean overwriteExisting) {
+    	if (pdfPath.equals(extractPath)) {
+    		throw new IllegalArgumentException("Extract path must be different from PDF path.");
+    	}
+    	if (Files.exists(extractPath) && !overwriteExisting) {
+    		System.out.println("  -> already extracted");    		
+    		return; // Skip extraction if the output file already exists and overwrite is not allowed
+    	}
         // In PDFBox 3.x wird Loader.loadPDF(...) verwendet
         try (PDDocument document = Loader.loadPDF(pdfPath.toFile());
         		OutputStream extractOutputStream = new FileOutputStream(extractPath.toFile())) {

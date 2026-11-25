@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 
 public class EPUBExtractorMain {
 
+	private final static boolean OVERWRITE_EXISTING = false;
+	
 	private final static String DEFAULT_EPUB_PATH = "input/EPUBs";
 	private final static String DEFAULT_EXTRACT_PATH = "output/EPUBs";
 //	private final static String DEFAULT_EPUB_PATH = "C:/EBOOKS";
@@ -33,20 +35,20 @@ public class EPUBExtractorMain {
 
 		System.out.println("EPUBExtractor " + epubPath + " -> " + extractPath);
 		
-		convertEpubToStructuredText(Paths.get(epubPath), Paths.get(extractPath));
+		convertEpubToStructuredText(Paths.get(epubPath), Paths.get(extractPath), OVERWRITE_EXISTING);
 		
 	}
 
-	private static void convertEpubToStructuredText(Path epubPath, Path extractPath) {
+	private static void convertEpubToStructuredText(Path epubPath, Path extractPath, boolean overwriteExisting) {
 		if (Files.isRegularFile(epubPath)) {
-			convertFile(epubPath, extractPath);
+			convertFile(epubPath, extractPath, overwriteExisting);
 		}
 		else if (Files.isDirectory(epubPath)) {
 			try {
 				Files.walk(epubPath)
 					.filter(Files::isRegularFile)
 					.filter(path -> path.toString().toLowerCase().endsWith(".epub"))
-					.forEach(path -> convertFile(path, epubPath, extractPath));
+					.forEach(path -> convertFile(path, epubPath, extractPath, overwriteExisting));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -58,7 +60,7 @@ public class EPUBExtractorMain {
 		}
 	}
 
-	private static void convertFile(Path epubPath, Path basePath, Path extractPath) {
+	private static void convertFile(Path epubPath, Path basePath, Path extractPath, boolean overwriteExisting) {
 		Path relativePath = basePath.relativize(epubPath);
 		Path targetPath = extractPath.resolve(relativePath);
 		try {
@@ -66,16 +68,16 @@ public class EPUBExtractorMain {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		convertFile(epubPath, targetPath);
+		convertFile(epubPath, targetPath, overwriteExisting);
 	}
 
-	private static void convertFile(Path epubPath, Path extractPath) {
+	private static void convertFile(Path epubPath, Path extractPath, boolean overwriteExisting) {
 		if (extractPath.getFileName().toString().toLowerCase().endsWith(".epub")) {
 			extractPath = extractPath.resolveSibling(extractPath.getFileName().toString().replaceAll("(?i)\\.epub$", ".txt"));
 		}
 		StructuredEpubExtractor extractor = new StructuredEpubExtractor();
 		System.out.println("Extracting " + epubPath + " to " + extractPath);
-		extractor.extract(epubPath, extractPath);
+		extractor.extract(epubPath, extractPath, overwriteExisting);
 	}
 
 }

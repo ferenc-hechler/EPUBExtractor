@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 
 public class PDFExtractorMain {
 
+	private final static boolean OVERWRITE_EXISTING = false;
+	
 	private final static String DEFAULT_PDF_PATH = "input/PDFs";
 	private final static String DEFAULT_EXTRACT_PATH = "output/PDFs";
 //	private final static String DEFAULT_PDF_PATH = "C:/EBOOKS";
@@ -33,20 +35,20 @@ public class PDFExtractorMain {
 
 		System.out.println("pdfExtractor " + pdfPath + " -> " + extractPath);
 		
-		convertPdfToStructuredText(Paths.get(pdfPath), Paths.get(extractPath));
+		convertPdfToStructuredText(Paths.get(pdfPath), Paths.get(extractPath), OVERWRITE_EXISTING);
 		
 	}
 
-	private static void convertPdfToStructuredText(Path pdfPath, Path extractPath) {
+	private static void convertPdfToStructuredText(Path pdfPath, Path extractPath, boolean overwriteExisting) {
 		if (Files.isRegularFile(pdfPath)) {
-			convertFile(pdfPath, extractPath);
+			convertFile(pdfPath, extractPath, overwriteExisting);
 		}
 		else if (Files.isDirectory(pdfPath)) {
 			try {
 				Files.walk(pdfPath)
 					.filter(Files::isRegularFile)
 					.filter(path -> path.toString().toLowerCase().endsWith(".pdf"))
-					.forEach(path -> convertFile(path, pdfPath, extractPath));
+					.forEach(path -> convertFile(path, pdfPath, extractPath, overwriteExisting));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -58,7 +60,7 @@ public class PDFExtractorMain {
 		}
 	}
 
-	private static void convertFile(Path pdfPath, Path basePath, Path extractPath) {
+	private static void convertFile(Path pdfPath, Path basePath, Path extractPath, boolean overwriteExisting) {
 		Path relativePath = basePath.relativize(pdfPath);
 		Path targetPath = extractPath.resolve(relativePath);
 		try {
@@ -66,16 +68,16 @@ public class PDFExtractorMain {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		convertFile(pdfPath, targetPath);
+		convertFile(pdfPath, targetPath, overwriteExisting);
 	}
 
-	private static void convertFile(Path pdfPath, Path extractPath) {
+	private static void convertFile(Path pdfPath, Path extractPath, boolean overwriteExisting) {
 		if (extractPath.getFileName().toString().toLowerCase().endsWith(".pdf")) {
 			extractPath = extractPath.resolveSibling(extractPath.getFileName().toString().replaceAll("(?i)\\.pdf$", ".txt"));
 		}
 		PdfTextExtractor extractor = new PdfTextExtractor();
 		System.out.println("Extracting " + pdfPath + " to " + extractPath);
-		extractor.extract(pdfPath, extractPath);
+		extractor.extract(pdfPath, extractPath, overwriteExisting);
 	}
 
 }
